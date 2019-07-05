@@ -8,4 +8,6 @@ export WheelGraph
 
 include("WheelGraph.jl")
 
+include("CompleteGraph.jl")
+
 end # module
