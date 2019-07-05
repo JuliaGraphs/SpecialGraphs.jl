@@ -1,16 +1,18 @@
 
-struct WheelGraph{T} <: LG.AbstractGraph{T}
+struct WheelGraph{T <: Integer} <: LG.AbstractGraph{T}
     nv::Int
 end
 
+WheelGraph(nv::T) where {T<:Integer} = WheelGraph{T}(Int(nv))
+
 LG.edgetype(::WheelGraph) = LG.Edge{Int}
 LG.is_directed(::WheelGraph) = false
-LG.is_directed(::Type{WheelGraph}) = false
+LG.is_directed(::Type{<:WheelGraph}) = false
 LG.nv(g::WheelGraph) = g.nv
 LG.ne(g::WheelGraph) = (LG.nv(g)-1) * 2
 LG.vertices(g::WheelGraph) = 1:LG.nv(g)
 
-function LightGraphs.edges(g::WheelGraph)
+function LG.edges(g::WheelGraph)
     edges = Vector{LG.Edge{Int}}()
     # add inner edges
     for j in 1:LG.nv(g)-1
@@ -24,7 +26,7 @@ function LightGraphs.edges(g::WheelGraph)
     return edges
 end
 
-function LightGraphs.outneighbors(g::WheelGraph, v)
+function LG.outneighbors(g::WheelGraph, v)
     if v == 1
         return collect(2:LG.nv(g))
     end
@@ -37,11 +39,11 @@ function LightGraphs.outneighbors(g::WheelGraph, v)
     return [1, v-1, v+1]
 end
 
-LightGraphs.inneighbors(g::WheelGraph, v) = outneighbors(g, v)
+LG.inneighbors(g::WheelGraph, v) = outneighbors(g, v)
 
-LightGraphs.has_vertex(g::WheelGraph, v) = v <= LG.nv(g)
+LG.has_vertex(g::WheelGraph, v) = v <= LG.nv(g)
 
-function LightGraphs.has_edge(g::WheelGraph, v1, v2)
+function LG.has_edge(g::WheelGraph, v1, v2)
     if v1 > v2
         return has_edge(g, v2, v1)
     end
