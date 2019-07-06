@@ -11,6 +11,7 @@ using LightGraphs: Edge, edges
     @test !LG.is_directed(WheelGraph{UInt})
     wg = WheelGraph(10)
     wgref = LG.WheelGraph(10)
+    @test LG.edgetype(wg) <: Edge
     @test LG.has_vertex(wg, 10)
     @test !LG.has_vertex(wg, 11)
     @test all(LG.pagerank(wg) ≈ LG.pagerank(wgref))
@@ -32,6 +33,7 @@ end
     @test !LG.is_directed(PathGraph)
     @test !LG.is_directed(PathGraph{Int})
     @test !LG.is_directed(PathGraph{UInt})
+    @test LG.edgetype(pg) <: Edge
     pgref = LG.PathGraph(10)
     @test LG.has_vertex(pg, 10)
     @test !LG.has_vertex(pg, 11)
@@ -54,6 +56,7 @@ end
     @test !LG.is_directed(CompleteGraph)
     @test !LG.is_directed(CompleteGraph{Int})
     @test !LG.is_directed(CompleteGraph{UInt})
+    @test LG.edgetype(cg) <: Edge
     cgref = LG.CompleteGraph(10)
     @test !LG.has_vertex(cg, 0)
     @test !LG.has_vertex(cg, 11)
