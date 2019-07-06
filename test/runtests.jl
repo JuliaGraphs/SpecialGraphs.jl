@@ -14,6 +14,8 @@ using LightGraphs: Edge, edges
     @test LG.edgetype(wg) <: Edge
     @test LG.has_vertex(wg, 10)
     @test !LG.has_vertex(wg, 11)
+    @test !LG.has_edge(wg, 10, 11)
+    @test LG.has_edge(wg, 10, 2) # boundary condition
     @test all(LG.pagerank(wg) ≈ LG.pagerank(wgref))
     for ninit in (1, 2, 5)
         @test all(LG.bfs_parents(wg, ninit) .== LG.bfs_parents(wgref, ninit))
@@ -37,6 +39,7 @@ end
     pgref = LG.PathGraph(10)
     @test LG.has_vertex(pg, 10)
     @test !LG.has_vertex(pg, 11)
+    @test !LG.has_edge(pg, 10, 11)
     @test all(LG.pagerank(pg) ≈ LG.pagerank(pgref))
     for ninit in (1, 2, 5)
         @test all(LG.dfs_parents(pg, ninit) .== LG.dfs_parents(pgref, ninit))
@@ -60,6 +63,7 @@ end
     cgref = LG.CompleteGraph(10)
     @test !LG.has_vertex(cg, 0)
     @test !LG.has_vertex(cg, 11)
+    @test !LG.has_edge(cg, 10, 11)
     @test LG.has_vertex(cg, 10)
     @test LG.ne(cg) == LG.ne(cgref)
     @test all(LG.pagerank(cg) ≈ LG.pagerank(cgref))
