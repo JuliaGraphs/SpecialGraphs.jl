@@ -6,6 +6,9 @@ const LG = LightGraphs
 using LightGraphs: Edge, edges
 
 @testset "WheelGraph" begin
+    @test !LG.is_directed(WheelGraph)
+    @test !LG.is_directed(WheelGraph{Int})
+    @test !LG.is_directed(WheelGraph{UInt})
     wg = WheelGraph(10)
     wgref = LG.WheelGraph(10)
     @test LG.has_vertex(wg, 10)
@@ -26,6 +29,9 @@ end
 
 @testset "PathGraph" begin
     pg = PathGraph(10)
+    @test !LG.is_directed(PathGraph)
+    @test !LG.is_directed(PathGraph{Int})
+    @test !LG.is_directed(PathGraph{UInt})
     pgref = LG.PathGraph(10)
     @test LG.has_vertex(pg, 10)
     @test !LG.has_vertex(pg, 11)
@@ -45,6 +51,9 @@ end
 
 @testset "CompleteGraph" begin
     cg = CompleteGraph(10)
+    @test !LG.is_directed(CompleteGraph)
+    @test !LG.is_directed(CompleteGraph{Int})
+    @test !LG.is_directed(CompleteGraph{UInt})
     cgref = LG.CompleteGraph(10)
     @test !LG.has_vertex(cg, 0)
     @test !LG.has_vertex(cg, 11)
