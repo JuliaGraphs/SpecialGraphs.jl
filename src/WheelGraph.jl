@@ -6,7 +6,6 @@ end
 WheelGraph(nv::T) where {T<:Integer} = WheelGraph{T}(Int(nv))
 
 LG.edgetype(::WheelGraph) = LG.Edge{Int}
-LG.is_directed(::WheelGraph) = false
 LG.is_directed(::Type{<:WheelGraph}) = false
 LG.nv(g::WheelGraph) = g.nv
 LG.ne(g::WheelGraph) = (LG.nv(g)-1) * 2
@@ -41,7 +40,7 @@ end
 
 LG.inneighbors(g::WheelGraph, v) = outneighbors(g, v)
 
-LG.has_vertex(g::WheelGraph, v) = v <= LG.nv(g)
+LG.has_vertex(g::WheelGraph, v) = 1 <= v <= LG.nv(g)
 
 function LG.has_edge(g::WheelGraph, v1, v2)
     if v1 > v2
