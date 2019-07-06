@@ -22,7 +22,7 @@ LG.vertices(g::PathGraph) = 1:LG.nv(g)
 
 LightGraphs.edges(g::PathGraph) = [LG.Edge(i, i+1) for i in 1:LG.nv(g)-1]
 
-LightGraphs.has_vertex(g::PathGraph, v) = v <= LG.nv(g)
+LightGraphs.has_vertex(g::PathGraph, v) = 1 <= v <= LG.nv(g)
 
 function LightGraphs.outneighbors(g::PathGraph, v)
     LG.has_vertex(g, v) || return Int[]

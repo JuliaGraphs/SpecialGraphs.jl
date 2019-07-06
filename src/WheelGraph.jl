@@ -41,7 +41,7 @@ end
 
 LG.inneighbors(g::WheelGraph, v) = outneighbors(g, v)
 
-LG.has_vertex(g::WheelGraph, v) = v <= LG.nv(g)
+LG.has_vertex(g::WheelGraph, v) = 1 <= v <= LG.nv(g)
 
 function LG.has_edge(g::WheelGraph, v1, v2)
     if v1 > v2

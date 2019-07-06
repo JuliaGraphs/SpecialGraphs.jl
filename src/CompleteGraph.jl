@@ -19,7 +19,7 @@ end
 
 LG.inneighbors(g::CompleteGraph, v) = outneighbors(g, v)
 
-LG.has_vertex(g::CompleteGraph, v) = v <= LG.nv(g)
+LG.has_vertex(g::CompleteGraph, v) = 1 <= v <= LG.nv(g)
 
 function LG.has_edge(g::CompleteGraph, v1, v2)
     if !has_vertex(g, v1) || !has_vertex(g, v2)
