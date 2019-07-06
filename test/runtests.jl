@@ -43,6 +43,7 @@ end
     @test !LG.has_vertex(pg, 11)
     @test !LG.has_edge(pg, 10, 11)
     @test all(LG.pagerank(pg) ≈ LG.pagerank(pgref))
+    @test LG.ne(pg) == LG.ne(pgref)
     for ninit in (1, 2, 5)
         @test all(LG.dfs_parents(pg, ninit) .== LG.dfs_parents(pgref, ninit))
         @test all(LG.dfs_parents(pg, ninit) .== LG.dfs_parents(pgref, ninit))
