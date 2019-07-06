@@ -3,6 +3,7 @@ using Test
 
 import LightGraphs
 const LG = LightGraphs
+using LightGraphs: Edge, edges
 
 @testset "WheelGraph" begin
     wg = WheelGraph(10)
@@ -13,6 +14,13 @@ const LG = LightGraphs
     for ninit in (1, 2, 5)
         @test all(LG.bfs_parents(wg, ninit) .== LG.bfs_parents(wgref, ninit))
         @test all(LG.dfs_parents(wg, ninit) .== LG.dfs_parents(wgref, ninit))
+    end
+    for i in 2:LG.nv(wg)-1
+        e = LG.edges(wg)
+        @test Edge(i, i+1) in e
+        @test LG.has_edge(wg, i, i+1)
+        @test Edge(1, i) in e
+        @test LG.has_edge(wg, 1, i)
     end
 end
 
@@ -26,9 +34,13 @@ end
         @test all(LG.dfs_parents(pg, ninit) .== LG.dfs_parents(pgref, ninit))
         @test all(LG.dfs_parents(pg, ninit) .== LG.dfs_parents(pgref, ninit))
     end
+    e = edges(pg)
     for v in 2:9
         @test length(LG.outneighbors(pg, v)) == 2
+        @test LG.has_edge(pg, v-1, v)
+        @test Edge(v-1, v) in e
     end
+    @test LG.has_edge(pg, 9, 10)
 end
 
 @testset "CompleteGraph" begin
@@ -45,5 +57,17 @@ end
     end
     for v in LG.vertices(cg)
         @test length(LG.outneighbors(cg, v)) == LG.nv(cg) - 1
+        e = LG.edges(cg)
+        for v2 in LG.vertices(cg)
+            if v == v2
+                @test !LG.has_edge(cg, v, v2)
+                @test !in(Edge(v, v2), e)
+            else
+                @test LG.has_edge(cg, v, v2)
+                if v < v2
+                    @test Edge(v, v2) in e
+                end
+            end
+        end
     end
 end

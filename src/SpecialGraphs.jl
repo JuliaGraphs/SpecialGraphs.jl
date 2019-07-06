@@ -3,7 +3,7 @@ module SpecialGraphs
 import LightGraphs
 const LG = LightGraphs
 
-using LightGraphs: nv, ne, outneighbors, inneighbors, vertices, edges, Edge
+using LightGraphs: nv, ne, outneighbors, inneighbors, vertices, edges, Edge, has_vertex
 
 export WheelGraph, PathGraph, CompleteGraph
 
