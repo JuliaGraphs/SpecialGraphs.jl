@@ -17,6 +17,7 @@ using LightGraphs: Edge, edges
     @test !LG.has_edge(wg, 10, 11)
     @test LG.has_edge(wg, 10, 2) # boundary condition
     @test all(LG.pagerank(wg) ≈ LG.pagerank(wgref))
+    @test LG.ne(wg) == LG.ne(wgref)
     for ninit in (1, 2, 5)
         @test all(LG.bfs_parents(wg, ninit) .== LG.bfs_parents(wgref, ninit))
         @test all(LG.dfs_parents(wg, ninit) .== LG.dfs_parents(wgref, ninit))
@@ -28,6 +29,7 @@ using LightGraphs: Edge, edges
         @test Edge(1, i) in e
         @test LG.has_edge(wg, 1, i)
     end
+    @test !LG.has_edge(wg, 2, 4)
 end
 
 @testset "PathGraph" begin

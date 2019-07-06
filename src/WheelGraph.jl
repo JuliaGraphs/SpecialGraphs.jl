@@ -6,7 +6,6 @@ end
 WheelGraph(nv::T) where {T<:Integer} = WheelGraph{T}(Int(nv))
 
 LG.edgetype(::WheelGraph) = LG.Edge{Int}
-LG.is_directed(::WheelGraph) = false
 LG.is_directed(::Type{<:WheelGraph}) = false
 LG.nv(g::WheelGraph) = g.nv
 LG.ne(g::WheelGraph) = (LG.nv(g)-1) * 2
