@@ -6,7 +6,7 @@ const LG = LightGraphs
 
 @testset "WheelGraph" begin
     wg = WheelGraph(10)
-    wgref = LG.wheel_graph(10)
+    wgref = LG.WheelGraph(10)
     @test LG.has_vertex(wg, 10)
     @test !LG.has_vertex(wg, 11)
     @test all(LG.pagerank(wg) ≈ LG.pagerank(wgref))
@@ -18,7 +18,7 @@ end
 
 @testset "PathGraph" begin
     pg = PathGraph(10)
-    pgref = LG.path_graph(10)
+    pgref = LG.PathGraph(10)
     @test LG.has_vertex(pg, 10)
     @test !LG.has_vertex(pg, 11)
     @test all(LG.pagerank(pg) ≈ LG.pagerank(pgref))
@@ -33,7 +33,7 @@ end
 
 @testset "CompleteGraph" begin
     cg = CompleteGraph(10)
-    cgref = LG.complete_graph(10)
+    cgref = LG.CompleteGraph(10)
     @test !LG.has_vertex(cg, 0)
     @test !LG.has_vertex(cg, 11)
     @test LG.has_vertex(cg, 10)
