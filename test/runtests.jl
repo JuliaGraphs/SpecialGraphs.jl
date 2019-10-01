@@ -11,6 +11,8 @@ using LightGraphs: Edge, edges
     @test !LG.is_directed(WheelGraph{UInt})
     wg = WheelGraph(10)
     wgref = LG.WheelGraph(10)
+    @test eltype(wg) == Int
+    @test eltype(WheelGraph{Int8}(Int8(5))) == Int8
     @test LG.edgetype(wg) <: Edge
     @test LG.has_vertex(wg, 10)
     @test !LG.has_vertex(wg, 11)
@@ -34,6 +36,8 @@ end
 
 @testset "PathGraph" begin
     pg = PathGraph(10)
+    @test eltype(pg) == Int
+    @test eltype(PathGraph{Int8}(Int8(5))) == Int8
     @test !LG.is_directed(PathGraph)
     @test !LG.is_directed(PathGraph{Int})
     @test !LG.is_directed(PathGraph{UInt})
@@ -59,6 +63,8 @@ end
 
 @testset "CompleteGraph" begin
     cg = CompleteGraph(10)
+    @test eltype(cg) == Int
+    @test eltype(CompleteGraph{Int8}(Int8(5))) == Int8
     @test !LG.is_directed(CompleteGraph)
     @test !LG.is_directed(CompleteGraph{Int})
     @test !LG.is_directed(CompleteGraph{UInt})
