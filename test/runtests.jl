@@ -197,6 +197,10 @@ end
         @testset "outneigbors(g, $v)" for v in (unique([1, 2, n - 1, n]) ∩ LG.vertices(g))
             outneighbors = LG.outneighbors(g, v)
 
+            @testset "same as inneighbors" begin
+                @test LG.inneighbors(g, v) == outneighbors
+            end
+
             @testset "eltype" begin
                 @test eltype(outneighbors) == T
                 @test eltype(typeof(outneighbors)) == T
@@ -236,6 +240,13 @@ end
                     @test (n1, n2) == (n1_expected, n2_expected)
                 end
             end
+        end
+
+        @testset "converting to SimpleGraph" begin
+
+            gsimple = LG.SimpleGraph(g)
+            @test gsimple == LG.cycle_graph(T(n))
+            @test eltype(g) == eltype(gsimple)
         end
 
         @testset "pagerank" begin
