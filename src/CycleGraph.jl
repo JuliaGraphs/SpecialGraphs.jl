@@ -17,7 +17,7 @@ CycleGraph(nv) = CycleGraph{typeof(nv)}(nv)
 Base.eltype(::Type{CycleGraph{T}}) where {T} = T
 Base.eltype(g::CycleGraph) = eltype(typeof(g))
 LG.edgetype(::Type{CycleGraph{T}}) where {T} = LG.Edge{T}
-LG.edgetype(g::CycleGraph{T}) where {T} = edgetype(typeof(g))
+LG.edgetype(g::CycleGraph{T}) where {T} = LG.edgetype(typeof(g))
 
 LG.is_directed(::Type{<:CycleGraph}) = false
 
