@@ -5,16 +5,17 @@
 A path graph, with each node linked to the previous and next one.
 """
 struct PathGraph{T<:Integer} <: LG.AbstractGraph{T}
-    nv::Int
-    function PathGraph{T}(nv::Integer) where {T<:Integer}
-        _nv = nv >= 0 ? Int(nv) : 0
+    nv::T
+    function PathGraph{T}(nv::T) where {T<:Integer}
+        _nv = nv >= 0 ? T(nv) : zero(T)
         new{T}(_nv)
     end
 end
 
-PathGraph(nv::Integer) = PathGraph{Int}(nv)
+PathGraph(nv::T) where {T<:Integer} = PathGraph{T}(nv)
 
-LG.edgetype(::PathGraph) = LG.Edge{Int}
+LG.eltype(::PathGraph{T}) where {T} = T
+LG.edgetype(::PathGraph{T}) where {T} = LG.Edge{T}
 LG.is_directed(::Type{<:PathGraph}) = false
 LG.nv(g::PathGraph) = g.nv
 LG.ne(g::PathGraph) = LG.nv(g) - 1

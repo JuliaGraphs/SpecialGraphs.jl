@@ -1,11 +1,10 @@
 
 struct CompleteGraph{T<:Integer} <: LG.AbstractGraph{T}
-    nv::Int
+    nv::T
 end
 
-CompleteGraph(nv::Integer) = CompleteGraph{Int}(nv)
-
-LG.edgetype(::CompleteGraph) = LG.Edge{Int}
+LG.eltype(::CompleteGraph{T}) where {T} = T
+LG.edgetype(::CompleteGraph{T}) where {T} = LG.Edge{T}
 LG.is_directed(::Type{<:CompleteGraph}) = false
 LG.nv(g::CompleteGraph) = g.nv
 LG.ne(g::CompleteGraph) = div(nv(g) * (nv(g)-1), 2)
