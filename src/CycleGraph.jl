@@ -116,16 +116,11 @@ LG.all_neighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
 
 # ---- neighbors iterator -----------------------------------
 
-struct OutNeighborsIter{T, G <: LG.AbstractGraph{T}}
-    graph::G
-    vertex::T
-end
 
-Base.eltype(::Type{<:OutNeighborsIter{T, G}}) where {T, G} = eltype(G)  
-
-function LG.iterate(iter::OutNeighborsIter{T, G}) where {T, G <: CycleGraph}
+function LG.iterate(iter::OutNeighborsIter{V, <:CycleGraph}) where {V}
 
     g = iter.graph
+    T = eltype(g)
     v = iter.vertex
     nvg = nv(g)
 
@@ -137,17 +132,19 @@ function LG.iterate(iter::OutNeighborsIter{T, G}) where {T, G <: CycleGraph}
     return (v - one(T)), (v + one(T))
 end
 
-function LG.iterate(iter::OutNeighborsIter{T, G}, state) where {T, G <: CycleGraph}
+function LG.iterate(iter::OutNeighborsIter{V, <:CycleGraph}, state) where {V}
 
     g = iter.graph
+    T = eltype(g)
 
     state == zero(T) && return nothing
     return state, zero(T)
 end
 
-function Base.length(iter::OutNeighborsIter{T, G}) where {T, G <: CycleGraph}
+function Base.length(iter::OutNeighborsIter{V, <:CycleGraph}) where {V}
 
     g = iter.graph
+    T = eltype(g)
     nvg = nv(g)
 
     nvg <= one(T) && return 0
