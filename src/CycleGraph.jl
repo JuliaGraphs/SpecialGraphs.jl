@@ -121,8 +121,6 @@ end
 LG.outneighbors(g::CycleGraph, v::Integer) = OutNeighborsIter(g, eltype(g)(v))
 
 LG.inneighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
-LG.neighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
-LG.all_neighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
 
 # ---- neighbors iterator -----------------------------------
 
