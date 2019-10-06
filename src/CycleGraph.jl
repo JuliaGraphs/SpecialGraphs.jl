@@ -3,6 +3,16 @@
 #         CycleGraph struct
 # =======================================================
 
+"""
+    CycleGraph <: AbstractGraph
+
+A structure representing an undirected cycle graph.
+
+A `CycleGraph` with one vertex is a single vertex without any edges (no self-loops)
+and a `CycleGraph` with two vertices is a single edge.
+
+See also: [`LightGraphs.cycle_graph`](@ref)
+"""
 struct CycleGraph{T<:Integer} <: LG.AbstractGraph{T}
     nv::T
 
