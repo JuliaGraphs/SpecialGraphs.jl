@@ -1,11 +1,10 @@
 
 struct WheelGraph{T <: Integer} <: LG.AbstractGraph{T}
-    nv::Int
+    nv::T
 end
 
-WheelGraph(nv::T) where {T<:Integer} = WheelGraph{T}(Int(nv))
-
-LG.edgetype(::WheelGraph) = LG.Edge{Int}
+LG.eltype(::WheelGraph{T}) where {T} = T
+LG.edgetype(::WheelGraph{T}) where {T} = LG.Edge{T}
 LG.is_directed(::Type{<:WheelGraph}) = false
 LG.nv(g::WheelGraph) = g.nv
 LG.ne(g::WheelGraph) = (LG.nv(g)-1) * 2
