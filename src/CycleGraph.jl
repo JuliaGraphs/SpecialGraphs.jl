@@ -1,4 +1,8 @@
 
+# =======================================================
+#         CycleGraph struct
+# =======================================================
+
 struct CycleGraph{T<:Integer} <: LG.AbstractGraph{T}
     nv::T
 
@@ -14,26 +18,43 @@ end
 CycleGraph(nv) = CycleGraph{typeof(nv)}(nv)
 
 
-Base.eltype(::Type{CycleGraph{T}}) where {T} = T
-Base.eltype(g::CycleGraph) = eltype(typeof(g))
-LG.edgetype(::Type{CycleGraph{T}}) where {T} = LG.Edge{T}
-LG.edgetype(g::CycleGraph{T}) where {T} = LG.edgetype(typeof(g))
+# =======================================================
+#         traits
+# =======================================================
 
 LG.is_directed(::Type{<:CycleGraph}) = false
 
+#
+# =======================================================
+#        vertices
+# =======================================================
+
+Base.eltype(::Type{CycleGraph{T}}) where {T} = T
+Base.eltype(g::CycleGraph) = eltype(typeof(g))
+
+LG.edgetype(::Type{CycleGraph{T}}) where {T} = LG.Edge{T}
+
 LG.nv(g::CycleGraph) = g.nv
+
+LG.vertices(g::CycleGraph{T}) where {T} = Base.OneTo(LG.nv(g))
+
+LG.has_vertex(g::CycleGraph, v) = v in LG.vertices(g)
+
+
+# =======================================================
+#        edges
+# =======================================================
+
+LG.edgetype(g::CycleGraph{T}) where {T} = LG.edgetype(typeof(g))
 
 function LG.ne(g::CycleGraph)
     nvg = Int(LG.nv(g))
     
     nvg >= 3 && return nvg
     nvg == 2 && return 1
+
     return 0
 end
-
-
-LG.vertices(g::CycleGraph{T}) where {T} = Base.OneTo(LG.nv(g))
-LG.has_vertex(g::CycleGraph, v) = v in LG.vertices(g)
 
 function LG.has_edge(g::CycleGraph{T}, u, v) where {T}
 
@@ -45,9 +66,12 @@ function LG.has_edge(g::CycleGraph{T}, u, v) where {T}
     return isinbounds & isedge
 end
 
+# ---- edges iterator -----------------------------------
+
 LG.edges(g::CycleGraph) = LG.SimpleGraphs.SimpleEdgeIter(g)
 
-Base.eltype(::Type{<:LG.SimpleGraphs.SimpleEdgeIter{G}}) where {T, G <: CycleGraph{T}} = LG.Edge{T}
+Base.eltype(::Type{<:LG.SimpleGraphs.SimpleEdgeIter{G}}) where {T, G <: CycleGraph{T}} =
+    LG.Edge{T}
 
 function LG.iterate(iter::LG.SimpleGraphs.SimpleEdgeIter{G}) where {G <: CycleGraph}
 
@@ -79,21 +103,27 @@ function LG.iterate(iter::LG.SimpleGraphs.SimpleEdgeIter{G}, state) where {G <: 
 end
 
 
-struct OutNeighborsIter{G <: LG.AbstractGraph, T}
-    graph::G
-    vertex::T
-end
+# =======================================================
+#        neighbors
+# =======================================================
 
-# TODO inbounds check
+# TODO maybe we want an inbounds check
 LG.outneighbors(g::CycleGraph, v::Integer) = OutNeighborsIter(g, eltype(g)(v))
 
 LG.inneighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
 LG.neighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
 LG.all_neighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
 
-Base.eltype(::Type{<:OutNeighborsIter{G}}) where {G <: CycleGraph} = eltype(G)  
+# ---- neighbors iterator -----------------------------------
 
-function LG.iterate(iter::OutNeighborsIter{G, T}) where {T, G <: CycleGraph{T}}
+struct OutNeighborsIter{T, G <: LG.AbstractGraph{T}}
+    graph::G
+    vertex::T
+end
+
+Base.eltype(::Type{<:OutNeighborsIter{T, G}}) where {T, G} = eltype(G)  
+
+function LG.iterate(iter::OutNeighborsIter{T, G}) where {T, G <: CycleGraph}
 
     g = iter.graph
     v = iter.vertex
@@ -107,7 +137,7 @@ function LG.iterate(iter::OutNeighborsIter{G, T}) where {T, G <: CycleGraph{T}}
     return (v - one(T)), (v + one(T))
 end
 
-function LG.iterate(iter::OutNeighborsIter{G, T}, state) where {T, G <: CycleGraph{T}}
+function LG.iterate(iter::OutNeighborsIter{T, G}, state) where {T, G <: CycleGraph}
 
     g = iter.graph
 
@@ -115,7 +145,7 @@ function LG.iterate(iter::OutNeighborsIter{G, T}, state) where {T, G <: CycleGra
     return state, zero(T)
 end
 
-function Base.length(iter::OutNeighborsIter{G, T}) where {T, G <: CycleGraph{T}}
+function Base.length(iter::OutNeighborsIter{T, G}) where {T, G <: CycleGraph}
 
     g = iter.graph
     nvg = nv(g)
@@ -126,7 +156,10 @@ function Base.length(iter::OutNeighborsIter{G, T}) where {T, G <: CycleGraph{T}}
     return 2
 end
 
+
+# =======================================================
+#         converting
+# =======================================================
+
 LG.SimpleGraph(g::CycleGraph) = LG.cycle_graph(nv(g))
-
-
 
