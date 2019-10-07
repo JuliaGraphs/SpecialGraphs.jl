@@ -136,12 +136,15 @@ function Base.getindex(nbs::OutNeighborVector{V, G}, i::Int) where {V, G <: Cycl
     v::T = nbs.vertex
     nvg::T = nv(g)
 
-    nvg == T(2) && return T(2) - v
     if i == 1
-        return (v == one(T)) ? T(2) : (v - one(T))
+        v == one(T) && return T(2)
+        v == nvg && return one(T)
+        return v - one(T)
     end
     # i == 2
-    return (v == nvg) ? (nvg(T) - 1) : (v + one(T))
+    v == one(T) && return nvg
+    v == nvg && return nvg - T(1)
+    return v + one(T)
 end
 
 Base.IndexStyle(::Type{<:OutNeighborVector{V, G}}) where {V, G <: CycleGraph} = IndexLinear()
