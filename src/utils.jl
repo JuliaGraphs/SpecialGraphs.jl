@@ -11,7 +11,7 @@ struct OutNeighborVector{V, G <: LG.AbstractGraph{V}} <: AbstractVector{V}
 end
 
 """
-    SimpleEdgeVector
+    SimpleEdgeVector <: AbstractVector
 
 A structure for iterating over the edges of a graph
 """
