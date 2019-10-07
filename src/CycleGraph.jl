@@ -109,13 +109,13 @@ Base.IndexStyle(::Type{<:SimpleEdgeVector{V, G}}) where {V, G <: CycleGraph} = I
 # =======================================================
 
 # TODO maybe we want an inbounds check
-LG.outneighbors(g::CycleGraph, v::Integer) = OutNeighborsVector(g, eltype(g)(v))
+LG.outneighbors(g::CycleGraph, v::Integer) = OutNeighborVector(g, eltype(g)(v))
 
 LG.inneighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
 
 # ---- neighbors iterator -----------------------------------
 
-function Base.size(nbs::OutNeighborsVector{V, G}) where {V, G <: CycleGraph}
+function Base.size(nbs::OutNeighborVector{V, G}) where {V, G <: CycleGraph}
 
     g = nbs.graph
     T = eltype(g)
@@ -127,7 +127,7 @@ function Base.size(nbs::OutNeighborsVector{V, G}) where {V, G <: CycleGraph}
 end
 
 # TODO propagate inbounds
-function Base.getindex(nbs::OutNeighborsVector{V, G}, i::Int) where {V, G <: CycleGraph}
+function Base.getindex(nbs::OutNeighborVector{V, G}, i::Int) where {V, G <: CycleGraph}
 
     i ∈ Base.OneTo(length(nbs)) || throw(BoundsError(nbs, i))
 
@@ -144,7 +144,7 @@ function Base.getindex(nbs::OutNeighborsVector{V, G}, i::Int) where {V, G <: Cyc
     return (v == nvg) ? (nvg(T) - 1) : (v + one(T))
 end
 
-Base.IndexStyle(::Type{<:OutNeighborsVector{V, G}}) where {V, G <: CycleGraph} = IndexLinear()
+Base.IndexStyle(::Type{<:OutNeighborVector{V, G}}) where {V, G <: CycleGraph} = IndexLinear()
 
 
 # =======================================================
