@@ -76,41 +76,32 @@ function LG.has_edge(g::CycleGraph{T}, u, v) where {T}
     return isinbounds & isedge
 end
 
-# ---- edges iterator -----------------------------------
+# ---- edges vector -----------------------------------
 
-LG.edges(g::CycleGraph) = LG.SimpleGraphs.SimpleEdgeIter(g)
+LG.edges(g::CycleGraph) = SimpleEdgeVector(g)
 
-Base.eltype(::Type{<:LG.SimpleGraphs.SimpleEdgeIter{G}}) where {T, G <: CycleGraph{T}} =
-    LG.Edge{T}
+function Base.size(edgevec::SimpleEdgeVector{V, G}) where {V, G <: CycleGraph}
 
-function LG.iterate(iter::LG.SimpleGraphs.SimpleEdgeIter{G}) where {G <: CycleGraph}
+    g = edgevec.graph
 
-    g = iter.g
-    nvg = LG.nv(g)
+    return (ne(g), )
+end
+
+# TODO propagate inbounds
+function Base.getindex(edgevec::SimpleEdgeVector{V, G}, i::Int) where {V, G <: CycleGraph}
+
+    i ∈ Base.OneTo(length(edgevec)) || throw(BoundsError(edgevec, i))
+
+    g = edgevec.graph
     T = eltype(g)
+    nvg::T = nv(g)
 
-    nvg <= one(T) && return nothing
-
-    e = LG.Edge{T}(one(T), T(2))
-    nvg == T(2) && return e, T(2)
-
-    return e, T(1) 
+    i == 1 && return LG.Edge(one(T), T(2))
+    i == 2 && return LG.Edge(one(T), nvg)
+    return LG.Edge(T(i - 1), T(i))
 end
 
-function LG.iterate(iter::LG.SimpleGraphs.SimpleEdgeIter{G}, state) where {G <: CycleGraph}
-
-    g = iter.g
-    nvg = nv(g)
-    T = eltype(g) 
-
-   state == nvg && return nothing
-    src = state
-    dst = ifelse(state == one(T), nvg, state + one(T))
-    e = LG.Edge{T}(src, dst)
-        
-    return e, (state + one(T))
-
-end
+Base.IndexStyle(::Type{<:SimpleEdgeVector{V, G}}) where {V, G <: CycleGraph} = IndexLinear()
 
 
 # =======================================================

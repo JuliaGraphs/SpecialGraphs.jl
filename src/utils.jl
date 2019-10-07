@@ -10,4 +10,12 @@ struct OutNeighborsVector{V, G <: LG.AbstractGraph{V}} <: AbstractVector{V}
     vertex::V
 end
 
+"""
+    SimpleEdgeVector
+
+A structure for iterating over the edges of a graph
+"""
+struct SimpleEdgeVector{V, G <: LG.AbstractGraph{V}} <: AbstractVector{LG.Edge{V}}
+    graph::G
+end
 
