@@ -3,7 +3,7 @@ module SpecialGraphs
 import LightGraphs
 const LG = LightGraphs
 
-import Base.eltype, Base.convert
+import Base.eltype, Base.convert, Base.size, Base.getindex, Base.IndexStyle
 
 using LightGraphs: nv, ne, outneighbors,
                    inneighbors, vertices, edges, Edge,

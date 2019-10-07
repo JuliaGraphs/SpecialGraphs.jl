@@ -118,48 +118,42 @@ end
 # =======================================================
 
 # TODO maybe we want an inbounds check
-LG.outneighbors(g::CycleGraph, v::Integer) = OutNeighborsIter(g, eltype(g)(v))
+LG.outneighbors(g::CycleGraph, v::Integer) = OutNeighborsVector(g, eltype(g)(v))
 
 LG.inneighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
 
 # ---- neighbors iterator -----------------------------------
 
+function Base.size(nbs::OutNeighborsVector{V, G}) where {V, G <: CycleGraph}
 
-function LG.iterate(iter::OutNeighborsIter{V, <:CycleGraph}) where {V}
-
-    g = iter.graph
+    g = nbs.graph
     T = eltype(g)
-    v = iter.vertex
-    nvg = nv(g)
+    nvg::T = nv(g)
 
-    nvg <= one(T) && return nothing
-    nvg == T(2)   && return (T(3) - v), zero(T)
-    v == one(T)   && return v + one(T),       nvg
-    v == nvg      && return one(T),     (v - one(T))
-
-    return (v - one(T)), (v + one(T))
+    nvg <= one(T) && return (0,)
+    nvg == T(2) && return (1,)
+    return (2,)
 end
 
-function LG.iterate(iter::OutNeighborsIter{V, <:CycleGraph}, state) where {V}
+# TODO propagate inbounds
+function Base.getindex(nbs::OutNeighborsVector{V, G}, i::Int) where {V, G <: CycleGraph}
 
-    g = iter.graph
+    i ∈ Base.OneTo(length(nbs)) || throw(BoundsError(nbs, i))
+
+    g = nbs.graph
     T = eltype(g)
+    v::T = nbs.vertex
+    nvg::T = nv(g)
 
-    state == zero(T) && return nothing
-    return state, zero(T)
+    nvg == T(2) && return T(2) - v
+    if i == 1
+        return (v == one(T)) ? T(2) : (v - one(T))
+    end
+    # i == 2
+    return (v == nvg) ? (nvg(T) - 1) : (v + one(T))
 end
 
-function Base.length(iter::OutNeighborsIter{V, <:CycleGraph}) where {V}
-
-    g = iter.graph
-    T = eltype(g)
-    nvg = nv(g)
-
-    nvg <= one(T) && return 0
-    nvg <= T(2) && return 1
-
-    return 2
-end
+Base.IndexStyle(::Type{<:OutNeighborsVector{V, G}}) where {V, G <: CycleGraph} = IndexLinear()
 
 
 # =======================================================
