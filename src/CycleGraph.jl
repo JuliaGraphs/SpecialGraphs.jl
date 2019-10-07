@@ -25,7 +25,7 @@ struct CycleGraph{T<:Integer} <: LG.AbstractGraph{T}
     end
 end
 
-CycleGraph(nv) = CycleGraph{typeof(nv)}(nv)
+CycleGraph(nv::T) where {T<: Integer} = CycleGraph{T}(nv)
 
 
 # =======================================================
