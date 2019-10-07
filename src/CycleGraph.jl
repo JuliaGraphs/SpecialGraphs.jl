@@ -87,10 +87,9 @@ function Base.size(edgevec::SimpleEdgeVector{V, G}) where {V, G <: CycleGraph}
     return (ne(g), )
 end
 
-# TODO propagate inbounds
-function Base.getindex(edgevec::SimpleEdgeVector{V, G}, i::Int) where {V, G <: CycleGraph}
+@inline function Base.getindex(edgevec::SimpleEdgeVector{V, G}, i::Int) where {V, G <: CycleGraph}
 
-    i ∈ Base.OneTo(length(edgevec)) || throw(BoundsError(edgevec, i))
+    @boundscheck i ∈ Base.OneTo(length(edgevec)) || throw(BoundsError(edgevec, i))
 
     g = edgevec.graph
     T = eltype(g)
@@ -108,8 +107,12 @@ Base.IndexStyle(::Type{<:SimpleEdgeVector{V, G}}) where {V, G <: CycleGraph} = I
 #        neighbors
 # =======================================================
 
-# TODO maybe we want an inbounds check
-LG.outneighbors(g::CycleGraph, v::Integer) = OutNeighborVector(g, eltype(g)(v))
+@inline function LG.outneighbors(g::CycleGraph, v::Integer)
+
+    @boundscheck v ∈ vertices(g) || throw(BoundError(g, v))
+
+    return OutNeighborVector(g, eltype(g)(v))
+end
 
 LG.inneighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
 
@@ -126,10 +129,9 @@ function Base.size(nbs::OutNeighborVector{V, G}) where {V, G <: CycleGraph}
     return (2,)
 end
 
-# TODO propagate inbounds
-function Base.getindex(nbs::OutNeighborVector{V, G}, i::Int) where {V, G <: CycleGraph}
+@inline function Base.getindex(nbs::OutNeighborVector{V, G}, i::Int) where {V, G <: CycleGraph}
 
-    i ∈ Base.OneTo(length(nbs)) || throw(BoundsError(nbs, i))
+    @boundscheck i ∈ Base.OneTo(length(nbs)) || throw(BoundsError(nbs, i))
 
     g = nbs.graph
     T = eltype(g)
