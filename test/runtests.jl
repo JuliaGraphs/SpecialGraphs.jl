@@ -256,7 +256,6 @@ end
             @test eltype(gsimple) == T2
         end
 
-
         @testset "pagerank" begin
             if n > 0 # pagerank does not work for empty graphs
                 @test LG.pagerank(g) ≈ LG.pagerank(LG.cycle_graph(T(n)))
