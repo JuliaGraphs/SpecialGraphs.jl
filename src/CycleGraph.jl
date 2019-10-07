@@ -166,5 +166,6 @@ end
 #         converting
 # =======================================================
 
-LG.SimpleGraph(g::CycleGraph) = LG.cycle_graph(nv(g))
+Base.convert(::Type{LG.SimpleGraph}, g::CycleGraph{T}) where {T} = cycle_graph(nv(g))
+Base.convert(::Type{LG.SimpleGraph{T}}, g::CycleGraph) where {T} = cycle_graph(T(nv(g)))
 

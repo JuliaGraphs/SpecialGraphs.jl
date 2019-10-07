@@ -3,11 +3,11 @@ module SpecialGraphs
 import LightGraphs
 const LG = LightGraphs
 
-import Base.eltype
+import Base.eltype, Base.convert
 
 using LightGraphs: nv, ne, outneighbors,
                    inneighbors, vertices, edges, Edge,
-                   has_vertex, has_edge
+                   has_vertex, has_edge, SimpleGraph, cycle_graph
 
 export CycleGraph, WheelGraph, PathGraph, CompleteGraph
 

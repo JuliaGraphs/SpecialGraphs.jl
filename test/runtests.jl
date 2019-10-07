@@ -242,12 +242,20 @@ end
             end
         end
 
-        @testset "converting to SimpleGraph" begin
+        @testset "convert(SimpleGraph, g)" begin
 
-            gsimple = LG.SimpleGraph(g)
+            gsimple = convert(LG.SimpleGraph, g)
             @test gsimple == LG.cycle_graph(T(n))
             @test eltype(g) == eltype(gsimple)
         end
+
+        @testset "convert(SimpleGraph{$T2}, g)" for T2 in (UInt32, Int64, UInt64)
+
+            gsimple = convert(LG.SimpleGraph{T2}, g)
+            @test gsimple == LG.cycle_graph(T2(n))
+            @test eltype(gsimple) == T2
+        end
+
 
         @testset "pagerank" begin
             if n > 0 # pagerank does not work for empty graphs
