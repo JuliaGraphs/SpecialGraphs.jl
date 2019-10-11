@@ -22,7 +22,8 @@ struct CompleteBipartiteGraph{T<:Integer} <: LG.AbstractGraph{T}
         n = convert(T, n)
         m >= zero(T) || throw(ArgumentError("m must be >= 0"))
         n >= zero(T) || throw(ArgumentError("n must be >= 0"))
-        # TODO overflow check
+        _, does_overflow = Base.Checked.add_with_overflow(m, n)
+        does_overflow && throw(ArgumentError("m + n must not exceed typemax($T)"))
 
         return new{T}(m, n)
     end
