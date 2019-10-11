@@ -7,7 +7,7 @@ import Base.eltype, Base.IndexStyle
 
 using LightGraphs: nv, ne, outneighbors,
                    inneighbors, vertices, edges, Edge, SimpleGraph, AbstractGraph,
-                   has_vertex, has_edge, complete_bipartite_graph
+                   has_vertex, has_edge, complete_bipartite_graph, edgetype
 
 export CompleteBipartiteGraph, CycleGraph, WheelGraph, PathGraph, CompleteGraph
 

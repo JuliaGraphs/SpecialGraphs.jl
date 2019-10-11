@@ -98,11 +98,11 @@ end
     m::T = g.m
     n::T = g.n
 
-    div, rem = divrem(T(i - 1), n)
+    div, rem = T.(divrem(i - 1, n))
 
     u = div + one(T)
     v = rem + one(T) + m
-    return Edge(u, v)
+    return Edge{T}(u, v)
 end
 
 Base.IndexStyle(::Type{<:SimpleEdgeVector{V, G}}) where {V, G <: CompleteBipartiteGraph} = IndexLinear()
@@ -155,4 +155,4 @@ Base.IndexStyle(::Type{<:OutNeighborVector{V, G}}) where {V, G <: CompleteBipart
 # =======================================================
 
 Base.convert(::Type{SimpleGraph}, g::CompleteBipartiteGraph{T}) where {T} = complete_bipartite_graph(g.m, g.n)
-Base.convert(::Type{SimpleGraph{T}}, g::CompleteBipartiteGraph) where {T} = complete_bipartite_graph(T(g.m), g.n)
+Base.convert(::Type{SimpleGraph{T}}, g::CompleteBipartiteGraph) where {T} = complete_bipartite_graph(T(g.m), T(g.n))
