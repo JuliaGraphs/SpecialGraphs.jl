@@ -11,6 +11,7 @@ using LightGraphs: nv, ne, outneighbors,
 
 export CycleGraph, WheelGraph, PathGraph, CompleteGraph
 
+include("utils.jl")
 include("CycleGraph.jl")
 include("WheelGraph.jl")
 include("PathGraph.jl")
