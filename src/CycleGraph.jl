@@ -72,7 +72,7 @@ function LG.has_edge(g::CycleGraph{T}, u, v) where {T}
     nvg = nv(g)
     oneT = one(T)
     isinbounds = (oneT <= u) & (v <= nvg) 
-    isedge = (v - u == oneT) | ((u == oneT) & (v == nvg))  
+    isedge = (v - u == oneT) | (v - u == nvg - oneT)
     return isinbounds & isedge
 end
 

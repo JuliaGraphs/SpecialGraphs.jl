@@ -161,7 +161,7 @@ end
         end
 
         @testset "has_edge(g, $src, $dst)" for
-            (src, dst) in [(1, 2), (2, 1), (1, 3), (0, 1), (1, n), (n, 1), (n, n +1)]
+            (src, dst) in [(1, 1), (1, 2), (2, 1), (1, 3), (0, 1), (1, n), (n, 1), (n, n +1)]
 
             has_edge_expected =
                 src in 1:n && dst in 1:n &&
