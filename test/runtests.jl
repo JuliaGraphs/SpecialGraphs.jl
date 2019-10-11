@@ -178,6 +178,10 @@ end
                 @test eltype(typeof(edges)) == LG.edgetype(g)
             end
 
+            @testset "correct IndexStyle" begin
+                @test IndexStyle(edges) == IndexLinear()
+            end
+
             @testset "length" begin
                 @test length(edges) == LG.ne(g)
             end
@@ -204,6 +208,10 @@ end
             @testset "eltype" begin
                 @test eltype(outneighbors) == T
                 @test eltype(typeof(outneighbors)) == T
+            end
+
+            @testset "correct IndexStyle" begin
+                @test IndexStyle(outneighbors) == IndexLinear()
             end
 
             @testset "length" begin
