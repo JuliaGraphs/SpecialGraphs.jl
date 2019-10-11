@@ -159,3 +159,18 @@ Base.IndexStyle(::Type{<:OutNeighborVector{V, G}}) where {V, G <: CycleGraph} = 
 Base.convert(::Type{SimpleGraph}, g::CycleGraph{T}) where {T} = cycle_graph(nv(g))
 Base.convert(::Type{SimpleGraph{T}}, g::CycleGraph) where {T} = cycle_graph(T(nv(g)))
 
+
+# =======================================================
+#         overrides
+# =======================================================
+
+# we use check, so that we have the same convention as in LightGraphs
+LG.is_connected(g::CycleGraph) = nv(g) > 0
+
+LG.connected_components(g::CycleGraph) = [vertices(g)]
+
+# has_self_loops is defined in terms of this
+LG.num_self_loops(g::CycleGraph) = 0
+
+LG.is_bipartite(g::CycleGraph) = (nv(g) == 1) | iseven(nv(g))
+
