@@ -167,7 +167,11 @@ Base.convert(::Type{SimpleGraph{T}}, g::CycleGraph) where {T} = cycle_graph(T(nv
 # we use this check so that we have the same convention as in LightGraphs
 LG.is_connected(g::CycleGraph) = nv(g) > 0
 
-LG.connected_components(g::CycleGraph) = [vertices(g)]
+function LG.connected_components(g::CycleGraph)
+
+    nvg(g) == 0 && return typeof(vertices(g))[]
+    return [vertices(g)]
+end
 
 # has_self_loops is defined in terms of this
 LG.num_self_loops(g::CycleGraph) = 0

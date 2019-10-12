@@ -70,8 +70,11 @@ end
 # we use this check so that we have the same convention as in LightGraphs
 LG.is_connected(g::WheelGraph) = nv(g) > 0
 
-# TODO should handle 0 case differently
-LG.connected_components(g::WheelGraph) = [vertices(g)]
+function LG.connected_components(g::WheelGraph)
+
+    nvg(g) == 0 && return typeof(vertices(g))[]
+    return [vertices(g)]
+end
 
 # has_self_loops is defined in terms of this
 LG.num_self_loops(::WheelGraph) = 0
