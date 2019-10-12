@@ -94,7 +94,7 @@ LG.δin(g::PathGraph) = δ(g)
 # =======================================================
 
 # TODO If there is a library that provides this, we could use a Toeplitz matrix instead
-function LG.adjacency_matrix(g::PathGraph, T::DataType=Int)
+function LG.adjacency_matrix(g::PathGraph, T::DataType=Int; dir=:out)
 
     nvg = nv(g)
     dv = zeros(T, nv(g))
