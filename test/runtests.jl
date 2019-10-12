@@ -33,6 +33,64 @@ using LightGraphs: Edge, edges
         @test LG.has_edge(wg, 1, i)
     end
     @test !LG.has_edge(wg, 2, 4)
+
+    @testset "overrides for WheelGraph{T}(n): (T = $T, n = $n)" for
+        T in [UInt8, Int32, Int64],
+        n in [0, 1, 2, 3, 8] ∪ (T == UInt8 ? (255,) : ()) # extremal case for UInt8
+
+        g = WheelGraph(T(n))
+        gsimple = LG.wheel_graph(T(n))
+
+        @testset "connectivity" begin
+
+            @test LG.is_connected(g) == LG.is_connected(gsimple)
+            @test LG.connected_components(g) == LG.connected_components(gsimple)
+        end
+
+        @testset "self-loops" begin
+
+            @test LG.has_self_loops(g) == LG.has_self_loops(gsimple)
+            @test LG.num_self_loops(g) == LG.num_self_loops(gsimple)
+        end
+
+        @testset "is_bipartite" begin
+
+            @test LG.is_bipartite(g) == LG.is_bipartite(gsimple)
+        end
+
+        @testset "squash" begin
+
+            g_squashed = LG.squash(g)
+            gsimple_squashed = LG.squash(gsimple)
+
+            @test typeof(g_squashed) == WheelGraph{eltype(gsimple_squashed)}
+            @test LG.nv(g) == LG.nv(gsimple_squashed)
+            @test LG.ne(g) == LG.ne(gsimple_squashed)
+        end
+
+        @testset "min/max degree" begin
+
+            @test typeof(LG.Δ(g)) == Int
+            @test LG.Δ(g) == LG.Δ(gsimple)
+
+            @test typeof(LG.Δout(g)) == Int
+            @test LG.Δout(g) == LG.Δout(gsimple)
+
+            @test typeof(LG.Δin(g)) == Int
+            @test LG.Δin(g) == LG.Δin(gsimple)
+
+            @test typeof(LG.δ(g)) == Int
+            @test LG.δ(g) == LG.δ(gsimple)
+
+            @test typeof(LG.δout(g)) == Int
+            @test LG.δout(g) == LG.δout(gsimple)
+
+            @test typeof(LG.δin(g)) == Int
+            @test LG.δin(g) == LG.δin(gsimple)
+
+        end
+
+    end
 end
 
 @testset "PathGraph" begin
