@@ -62,3 +62,43 @@ function LG.has_edge(g::WheelGraph, v1, v2)
     end
     return false
 end
+
+# =======================================================
+#         overrides
+# =======================================================
+
+# we use this check so that we have the same convention as in LightGraphs
+LG.is_connected(g::WheelGraph) = nv(g) > 0
+
+# TODO should handle 0 case differently
+LG.connected_components(g::WheelGraph) = [vertices(g)]
+
+# has_self_loops is defined in terms of this
+LG.num_self_loops(::WheelGraph) = 0
+
+LG.is_bipartite(g::WheelGraph) = nv(g) <= 2
+
+function LG.squash(g::WheelGraph)
+    nvg = nv(g)
+    for T ∈ (UInt8, UInt16, UInt32, UInt64)
+        nv(g) < typemax(T) && return WheelGraph(T(nvg))
+    end
+end
+
+# ---- degree -----------------------------------
+
+function LG.Δ(g::WheelGraph)
+    nvg = nv(g)
+    return ifelse(nvg == 0, typemin(Int), Int(nvg) - 1)
+end
+
+LG.Δout(g::WheelGraph) = Δ(g)
+LG.Δin(g::WheelGraph) = Δ(g)
+
+function LG.δ(g::WheelGraph)
+    nvg = nv(g)
+    return ifelse(nvg == 0, typemax(Int), ifelse(n <= 2, Int(nvg) - 1, 3))
+end
+
+LG.δout(g::WheelGraph) = δ(g)
+LG.δin(g::WheelGraph) = δ(g)
