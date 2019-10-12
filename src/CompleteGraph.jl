@@ -32,11 +32,11 @@ end
 # =======================================================
 
 # we use this check so that we have the same convention as in LightGraphs
-LG.is_connected(::CompleteGraph) = nv(g) > 0
+LG.is_connected(g::CompleteGraph) = nv(g) > 0
 
 function LG.connected_components(g::CompleteGraph)
 
-    nvg(g) == 0 && return typeof(vertices(g))[]
+    nv(g) == 0 && return typeof(vertices(g))[]
     return [vertices(g)]
 end
 
