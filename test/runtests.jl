@@ -61,6 +61,74 @@ end
         @test Edge(v-1, v) in e
     end
     @test LG.has_edge(pg, 9, 10)
+
+    @testset "overrrides for PathGraph{T}(n): (T = $T, n = $n)" for
+        T in [UInt8, Int32, Int64],
+        n in [0, 1, 2, 3, 8] ∪ (T == UInt8 ? (255,) : ()) # extremal case for UInt8
+
+        g = PathGraph(T(n))
+        gsimple = LG.path_graph(T(n))
+
+        @testset "connectivity" begin
+
+            @test LG.is_connected(g) == LG.is_connected(gsimple)
+            @test LG.connected_components(g) == LG.connected_components(gsimple)
+        end
+
+        @testset "self-loops" begin
+
+            @test LG.has_self_loops(g) == LG.has_self_loops(gsimple)
+            @test LG.num_self_loops(g) == LG.num_self_loops(gsimple)
+        end
+
+        @testset "is_bipartite" begin
+
+            @test LG.is_bipartite(g) == LG.is_bipartite(gsimple)
+        end
+
+        @testset "squash" begin
+
+            g_squashed = LG.squash(g)
+            gsimple_squashed = LG.squash(gsimple)
+
+            @test typeof(g_squashed) == PathGraph{eltype(gsimple_squashed)}
+            @test LG.nv(g) == LG.nv(gsimple_squashed)
+            @test LG.ne(g) == LG.ne(gsimple_squashed)
+        end
+
+        @testset "min/max degree" begin
+
+            @test typeof(LG.Δ(g)) == Int
+            @test LG.Δ(g) == LG.Δ(gsimple)
+
+            @test typeof(LG.Δout(g)) == Int
+            @test LG.Δout(g) == LG.Δout(gsimple)
+
+            @test typeof(LG.Δin(g)) == Int
+            @test LG.Δin(g) == LG.Δin(gsimple)
+
+            @test typeof(LG.δ(g)) == Int
+            @test LG.δ(g) == LG.δ(gsimple)
+
+            @test typeof(LG.δout(g)) == Int
+            @test LG.δout(g) == LG.δout(gsimple)
+
+            @test typeof(LG.δin(g)) == Int
+            @test LG.δin(g) == LG.δin(gsimple)
+
+        end
+
+        # we must exclude this case because of an error
+        # in LightGraphs.adjacency_matrix(::SimpleGraph)
+        if !(T == UInt8 && n == 255)
+            @testset "adjacency_matrix(g, T2): T2 = $T2" for
+                T2 in (Bool, Int, Int8, UInt8)
+
+                @test eltype(LG.adjacency_matrix(g, T2)) == T2
+                @test LG.adjacency_matrix(g, T2) == LG.adjacency_matrix(gsimple, T2)
+            end
+        end
+    end
 end
 
 @testset "CompleteGraph" begin
@@ -246,10 +314,10 @@ end
         end
 
         @testset "has_edge(g, $src, $dst)" for
-            (src, dst) in [(1, 2), (2, 1), (1, 3), (0, 1), (1, n), (n, 1), (n, n +1)]
+            (src, dst) in unique([(1, 1), (1, 2), (2, 1), (1, 3), (0, 1), (1, n), (n, 1), (n, n +1)])
 
             has_edge_expected =
-                src in 1:n && dst in 1:n &&
+                src in 1:n && dst in 1:n && src != dst &&
                 ((max(src, dst) - min(src, dst) == 1) || (min(src, dst) == 1 && max(src, dst) == n))
 
             @test LG.has_edge(g, src, dst) == has_edge_expected
