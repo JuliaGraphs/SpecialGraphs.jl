@@ -12,6 +12,7 @@ using LightGraphs: AbstractGraph, SimpleGraph,
                    Δ, δ
 
 using FillArrays: Fill
+using LinearAlgebra: SymTridiagonal
 
 export CycleGraph, WheelGraph, PathGraph, CompleteGraph
 

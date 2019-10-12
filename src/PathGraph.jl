@@ -88,3 +88,16 @@ end
 
 LG.δout(g::PathGraph) = δ(g)
 LG.δin(g::PathGraph) = δ(g)
+
+# =======================================================
+#         matrices
+# =======================================================
+
+# TODO If there is a library that provides this, we could use a Toeplitz matrix instead
+function LG.adjacency_matrix(g::PathGraph, T::DataType=Int)
+
+    nvg = nv(g)
+    dv = zeros(T, nv(g))
+    ev = ones(T, max(0, nv(g) - 1))
+    return SymTridiagonal(dv, ev)
+end
