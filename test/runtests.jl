@@ -329,6 +329,7 @@ end
 
             @testset "correct IndexStyle" begin
                 @test IndexStyle(edges) == IndexLinear()
+                @test IndexStyle(typeof(edges)) == IndexLinear()
             end
 
             @testset "length" begin
@@ -361,6 +362,7 @@ end
 
             @testset "correct IndexStyle" begin
                 @test IndexStyle(outneighbors) == IndexLinear()
+                @test IndexStyle(typeof(outneighbors)) == IndexLinear()
             end
 
             @testset "length" begin
