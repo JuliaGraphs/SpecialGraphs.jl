@@ -72,7 +72,7 @@ function LG.has_edge(g::CycleGraph{T}, u, v) where {T}
     nvg = nv(g)
     oneT = one(T)
     isinbounds = (oneT <= u) & (v <= nvg) 
-    isedge = (v - u == oneT) | ((u == oneT) & (v == nvg))  
+    isedge = ((v - u == oneT) | (v - u == nvg - oneT)) & (u != v)
     return isinbounds & isedge
 end
 
@@ -169,7 +169,7 @@ LG.is_connected(g::CycleGraph) = nv(g) > 0
 
 function LG.connected_components(g::CycleGraph)
 
-    nvg(g) == 0 && return typeof(vertices(g))[]
+    nv(g) == 0 && return typeof(vertices(g))[]
     return [vertices(g)]
 end
 

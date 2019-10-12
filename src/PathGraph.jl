@@ -18,7 +18,7 @@ LG.eltype(::PathGraph{T}) where {T} = T
 LG.edgetype(::PathGraph{T}) where {T} = LG.Edge{T}
 LG.is_directed(::Type{<:PathGraph}) = false
 LG.nv(g::PathGraph) = g.nv
-LG.ne(g::PathGraph) = LG.nv(g) - 1
+LG.ne(g::PathGraph) = max(0, Int(LG.nv(g)) - 1)
 LG.vertices(g::PathGraph) = 1:LG.nv(g)
 
 LightGraphs.edges(g::PathGraph) = [LG.Edge(i, i+1) for i in 1:LG.nv(g)-1]
@@ -55,7 +55,7 @@ LG.is_connected(g::PathGraph) = nv(g) > 0
 
 function LG.connected_components(g::PathGraph)
 
-    nvg(g) == 0 && return typeof(vertices(g))[]
+    nv(g) == 0 && return typeof(vertices(g))[]
     return [vertices(g)]
 end
 
@@ -98,6 +98,6 @@ function LG.adjacency_matrix(g::PathGraph, T::DataType=Int; dir=:out)
 
     nvg = nv(g)
     dv = zeros(T, nv(g))
-    ev = ones(T, max(0, nv(g) - 1))
+    ev = ones(T, max(0, Int(nv(g)) - 1))
     return SymTridiagonal(dv, ev)
 end
