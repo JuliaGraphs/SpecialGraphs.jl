@@ -164,7 +164,7 @@ Base.convert(::Type{SimpleGraph{T}}, g::CycleGraph) where {T} = cycle_graph(T(nv
 #         overrides
 # =======================================================
 
-# we use check, so that we have the same convention as in LightGraphs
+# we use this check so that we have the same convention as in LightGraphs
 LG.is_connected(g::CycleGraph) = nv(g) > 0
 
 LG.connected_components(g::CycleGraph) = [vertices(g)]
@@ -173,4 +173,34 @@ LG.connected_components(g::CycleGraph) = [vertices(g)]
 LG.num_self_loops(g::CycleGraph) = 0
 
 LG.is_bipartite(g::CycleGraph) = (nv(g) == 1) | iseven(nv(g))
+
+function LG.squash(g::CycleGraph)
+    nvg = nv(g)
+    for T ∈ (UInt8, UInt16, UInt32, UInt64)
+        nv(g) < typemax(T) && return CycleGraph{T}(nvg)
+    end
+end
+
+# ---- degree -----------------------------------
+
+function LG.Δ(g::CycleGraph)
+    nvg = nv(g)
+    return typemin(Int) * (nvg == 0) + (nvg >= 2) + (nvg >= 3)
+end
+
+LG.Δout(g::CycleGraph) = Δ(g)
+LG.Δin(g::CycleGraph) = Δ(g)
+
+function LG.δ(g::CycleGraph)
+    nvg = nv(g)
+    return typemax(Int) * (nvg == 0) + (nvg >= 2) + (nvg >= 3)
+end
+
+LG.δout(g::CycleGraph) = δ(g)
+LG.δin(g::CycleGraph) = δ(g)
+
+LG.degree(g::CycleGraph, vs::AbstractVector=vertices(g)) = Fill(Δ(g), length(vs))
+
+LG.indegree(g::CycleGraph, vs::AbstractVector=vertices(g)) = degree(g, vs)
+LG.outdegree(g::CycleGraph, vs::AbstractVector=vertices(g)) = degree(g, vs)
 
