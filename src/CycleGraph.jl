@@ -13,7 +13,7 @@ and a `CycleGraph` with two vertices is a single edge.
 
 See also: [`LightGraphs.cycle_graph`](@ref)
 """
-struct CycleGraph{T<:Integer} <: LG.AbstractGraph{T}
+struct CycleGraph{T<:Integer} <: AbstractGraph{T}
     nv::T
 
     function CycleGraph{T}(nv) where {T}
@@ -42,23 +42,23 @@ LG.is_directed(::Type{<:CycleGraph}) = false
 Base.eltype(::Type{CycleGraph{T}}) where {T} = T
 Base.eltype(g::CycleGraph) = eltype(typeof(g))
 
-LG.edgetype(::Type{CycleGraph{T}}) where {T} = LG.Edge{T}
+LG.edgetype(::Type{CycleGraph{T}}) where {T} = Edge{T}
 
 LG.nv(g::CycleGraph) = g.nv
 
-LG.vertices(g::CycleGraph{T}) where {T} = Base.OneTo(LG.nv(g))
+LG.vertices(g::CycleGraph{T}) where {T} = Base.OneTo(nv(g))
 
-LG.has_vertex(g::CycleGraph, v) = v in LG.vertices(g)
+LG.has_vertex(g::CycleGraph, v) = v in vertices(g)
 
 
 # =======================================================
 #        edges
 # =======================================================
 
-LG.edgetype(g::CycleGraph{T}) where {T} = LG.edgetype(typeof(g))
+LG.edgetype(g::CycleGraph{T}) where {T} = edgetype(typeof(g))
 
 function LG.ne(g::CycleGraph)
-    nvg = Int(LG.nv(g))
+    nvg = Int(nv(g))
     
     nvg >= 3 && return nvg
     nvg == 2 && return 1
@@ -69,102 +69,93 @@ end
 function LG.has_edge(g::CycleGraph{T}, u, v) where {T}
 
     u, v = minmax(u, v)
-    nvg = LG.nv(g)
+    nvg = nv(g)
     oneT = one(T)
     isinbounds = (oneT <= u) & (v <= nvg) 
-    isedge = (v - u == oneT) | ((u == oneT) & (v == nvg))  
+    isedge = (v - u == oneT) | (v - u == nvg - oneT)
     return isinbounds & isedge
 end
 
-# ---- edges iterator -----------------------------------
+# ---- edges vector -----------------------------------
 
-LG.edges(g::CycleGraph) = LG.SimpleGraphs.SimpleEdgeIter(g)
+LG.edges(g::CycleGraph) = SimpleEdgeVector(g)
 
-Base.eltype(::Type{<:LG.SimpleGraphs.SimpleEdgeIter{G}}) where {T, G <: CycleGraph{T}} =
-    LG.Edge{T}
+function Base.size(edgevec::SimpleEdgeVector{V, G}) where {V, G <: CycleGraph}
 
-function LG.iterate(iter::LG.SimpleGraphs.SimpleEdgeIter{G}) where {G <: CycleGraph}
+    g = edgevec.graph
 
-    g = iter.g
-    nvg = LG.nv(g)
+    return (ne(g), )
+end
+
+@inline function Base.getindex(edgevec::SimpleEdgeVector{V, G}, i::Int) where {V, G <: CycleGraph}
+
+    @boundscheck i ∈ Base.OneTo(length(edgevec)) || throw(BoundsError(edgevec, i))
+
+    g = edgevec.graph
     T = eltype(g)
+    nvg::T = nv(g)
 
-    nvg <= one(T) && return nothing
-
-    e = LG.Edge{T}(one(T), T(2))
-    nvg == T(2) && return e, T(2)
-
-    return e, T(1) 
+    i == 1 && return Edge(one(T), T(2))
+    i == 2 && return Edge(one(T), nvg)
+    return Edge(T(i - 1), T(i))
 end
 
-function LG.iterate(iter::LG.SimpleGraphs.SimpleEdgeIter{G}, state) where {G <: CycleGraph}
-
-    g = iter.g
-    nvg = nv(g)
-    T = eltype(g) 
-
-   state == nvg && return nothing
-    src = state
-    dst = ifelse(state == one(T), nvg, state + one(T))
-    e = LG.Edge{T}(src, dst)
-        
-    return e, (state + one(T))
-
-end
+Base.IndexStyle(::Type{<:SimpleEdgeVector{V, G}}) where {V, G <: CycleGraph} = IndexLinear()
 
 
 # =======================================================
 #        neighbors
 # =======================================================
 
-# TODO maybe we want an inbounds check
-LG.outneighbors(g::CycleGraph, v::Integer) = OutNeighborsIter(g, eltype(g)(v))
+@inline function LG.outneighbors(g::CycleGraph, v::Integer)
 
-LG.inneighbors(g::CycleGraph, v::Integer) = LG.outneighbors(g, v)
+    @boundscheck v ∈ vertices(g) || throw(BoundError(g, v))
 
-# ---- neighbors iterator -----------------------------------
-
-
-function LG.iterate(iter::OutNeighborsIter{V, <:CycleGraph}) where {V}
-
-    g = iter.graph
-    T = eltype(g)
-    v = iter.vertex
-    nvg = nv(g)
-
-    nvg <= one(T) && return nothing
-    nvg == T(2)   && return (T(3) - v), zero(T)
-    v == one(T)   && return v + one(T),       nvg
-    v == nvg      && return one(T),     (v - one(T))
-
-    return (v - one(T)), (v + one(T))
+    return OutNeighborVector(g, eltype(g)(v))
 end
 
-function LG.iterate(iter::OutNeighborsIter{V, <:CycleGraph}, state) where {V}
+LG.inneighbors(g::CycleGraph, v::Integer) = outneighbors(g, v)
 
-    g = iter.graph
+# ---- neighbors vector -----------------------------------
+
+function Base.size(nbs::OutNeighborVector{V, G}) where {V, G <: CycleGraph}
+
+    g = nbs.graph
     T = eltype(g)
+    nvg::T = nv(g)
 
-    state == zero(T) && return nothing
-    return state, zero(T)
+    nvg <= one(T) && return (0,)
+    nvg == T(2) && return (1,)
+    return (2,)
 end
 
-function Base.length(iter::OutNeighborsIter{V, <:CycleGraph}) where {V}
+@inline function Base.getindex(nbs::OutNeighborVector{V, G}, i::Int) where {V, G <: CycleGraph}
 
-    g = iter.graph
+    @boundscheck i ∈ Base.OneTo(length(nbs)) || throw(BoundsError(nbs, i))
+
+    g = nbs.graph
     T = eltype(g)
-    nvg = nv(g)
+    v::T = nbs.vertex
+    nvg::T = nv(g)
 
-    nvg <= one(T) && return 0
-    nvg <= T(2) && return 1
-
-    return 2
+    if i == 1
+        v == one(T) && return T(2)
+        v == nvg && return one(T)
+        return v - one(T)
+    end
+    # i == 2
+    v == one(T) && return nvg
+    v == nvg && return nvg - T(1)
+    return v + one(T)
 end
+
+Base.IndexStyle(::Type{<:OutNeighborVector{V, G}}) where {V, G <: CycleGraph} = IndexLinear()
 
 
 # =======================================================
 #         converting
 # =======================================================
 
-LG.SimpleGraph(g::CycleGraph) = LG.cycle_graph(nv(g))
+Base.convert(::Type{SimpleGraph}, g::CycleGraph{T}) where {T} = cycle_graph(nv(g))
+Base.convert(::Type{SimpleGraph{T}}, g::CycleGraph) where {T} = cycle_graph(T(nv(g)))
 

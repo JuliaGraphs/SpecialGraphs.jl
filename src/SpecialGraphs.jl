@@ -3,11 +3,13 @@ module SpecialGraphs
 import LightGraphs
 const LG = LightGraphs
 
-import Base.eltype, Base.IndexStyle
+import Base.eltype, Base.convert, Base.size, Base.getindex, Base.IndexStyle
 
-using LightGraphs: nv, ne, outneighbors,
-                   inneighbors, vertices, edges, Edge, SimpleGraph, AbstractGraph,
-                   has_vertex, has_edge, complete_bipartite_graph, edgetype
+using LightGraphs: AbstractGraph, SimpleGraph,
+                   nv, ne, outneighbors, inneighbors,
+                   edgetype, vertices, edges, Edge,
+                   has_vertex, has_edge, SimpleGraph,
+                   cycle_graph, complete_bipartite_graph
 
 export CompleteBipartiteGraph, CycleGraph, WheelGraph, PathGraph, CompleteGraph
 
