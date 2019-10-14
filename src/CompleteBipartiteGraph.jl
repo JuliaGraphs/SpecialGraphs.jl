@@ -29,7 +29,10 @@ struct CompleteBipartiteGraph{T<:Integer} <: LG.AbstractGraph{T}
     end
 end
 
-CompleteBipartiteGraph(m::T, n::T) where {T<: Integer} = CompleteBipartiteGraph{T}(m, n)
+function CompleteBipartiteGraph(m::Integer, n::Integer)
+    m, n = promote(m, n)
+    return CompleteBipartiteGraph{typeof(m)}(m, n)
+end
 
 
 # =======================================================
@@ -46,9 +49,9 @@ LG.is_directed(::Type{<:CompleteBipartiteGraph}) = false
 Base.eltype(::Type{CompleteBipartiteGraph{T}}) where {T} = T
 Base.eltype(g::CompleteBipartiteGraph) = eltype(typeof(g))
 
-LG.nv(g::CompleteBipartiteGraph{T}) where {T} = T(g.m + g.n)
+LG.nv(g::CompleteBipartiteGraph) = g.m + g.n
 
-LG.vertices(g::CompleteBipartiteGraph{T}) where {T} = Base.OneTo(nv(g))
+LG.vertices(g::CompleteBipartiteGraph) = Base.OneTo(nv(g))
 
 LG.has_vertex(g::CompleteBipartiteGraph, v) = v in vertices(g)
 
@@ -74,7 +77,6 @@ function LG.has_edge(g::CompleteBipartiteGraph{T}, u, v) where {T}
 
     m = g.m
     n = g.n
-rem
     return (u ∈ Base.OneTo(m)) & ((v - m) ∈ (Base.OneTo(n)))
 end
 
@@ -83,9 +85,7 @@ end
 LG.edges(g::CompleteBipartiteGraph) = SimpleEdgeVector(g)
 
 function Base.size(edgevec::SimpleEdgeVector{V, G}) where {V, G <: CompleteBipartiteGraph}
-
     g = edgevec.graph
-
     return (ne(g), )
 end
 
@@ -113,9 +113,7 @@ Base.IndexStyle(::Type{<:SimpleEdgeVector{V, G}}) where {V, G <: CompleteBiparti
 # =======================================================
 
 @inline function LG.outneighbors(g::CompleteBipartiteGraph, v::Integer)
-
     @boundscheck v ∈ vertices(g) || throw(BoundsError(g, v))
-
     return OutNeighborVector(g, eltype(g)(v))
 end
 
