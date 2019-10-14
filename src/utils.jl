@@ -5,7 +5,7 @@
 
 A structure for iterating over the out neighbors in a graph for a certain vertex.
 """
-struct OutNeighborVector{V, G <: LG.AbstractGraph{V}} <: AbstractVector{V}
+struct OutNeighborVector{V, G <: AbstractGraph{V}} <: AbstractVector{V}
     graph::G
     vertex::V
 end
@@ -19,19 +19,3 @@ struct SimpleEdgeVector{V, G <: LG.AbstractGraph{V}} <: AbstractVector{LG.Edge{V
     graph::G
 end
 
-"""
-    OutNeighborVector <: AbstractVector
-A structure for iterating over the out neighbors in a graph for a certain vertex.
-"""
-struct OutNeighborVector{V, G <: AbstractGraph{V}} <: AbstractVector{V}
-    graph::G
-    vertex::V
-end
-
-"""
-    SimpleEdgeVector <: AbstractVector
-A structure for iterating over the edges of a graph
-"""
-struct SimpleEdgeVector{V, G <: AbstractGraph{V}} <: AbstractVector{LG.Edge{V}}
-    graph::G
-end
