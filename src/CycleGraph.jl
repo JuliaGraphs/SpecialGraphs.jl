@@ -207,4 +207,3 @@ LG.degree(g::CycleGraph, vs::AbstractVector=vertices(g)) = Fill(Δ(g), length(vs
 
 LG.indegree(g::CycleGraph, vs::AbstractVector=vertices(g)) = degree(g, vs)
 LG.outdegree(g::CycleGraph, vs::AbstractVector=vertices(g)) = degree(g, vs)
-
