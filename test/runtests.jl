@@ -161,7 +161,7 @@ end
         end
 
         @testset "has_edge(g, $src, $dst)" for
-            (src, dst) in [(1, 2), (2, 1), (1, 3), (0, 1), (1, n), (n, 1), (n, n +1)]
+            (src, dst) in [(1, 1), (1, 2), (2, 1), (1, 3), (0, 1), (1, n), (n, 1), (n, n +1)]
 
             has_edge_expected =
                 src in 1:n && dst in 1:n &&
@@ -176,6 +176,11 @@ end
             @testset "eltype" begin
                 @test eltype(edges) == LG.edgetype(g)
                 @test eltype(typeof(edges)) == LG.edgetype(g)
+            end
+
+            @testset "correct IndexStyle" begin
+                @test IndexStyle(edges) == IndexLinear()
+                @test IndexStyle(typeof(edges)) == IndexLinear()
             end
 
             @testset "length" begin
@@ -204,6 +209,11 @@ end
             @testset "eltype" begin
                 @test eltype(outneighbors) == T
                 @test eltype(typeof(outneighbors)) == T
+            end
+
+            @testset "correct IndexStyle" begin
+                @test IndexStyle(outneighbors) == IndexLinear()
+                @test IndexStyle(typeof(outneighbors)) == IndexLinear()
             end
 
             @testset "length" begin
@@ -242,11 +252,18 @@ end
             end
         end
 
-        @testset "converting to SimpleGraph" begin
+        @testset "convert(SimpleGraph, g)" begin
 
-            gsimple = LG.SimpleGraph(g)
+            gsimple = convert(LG.SimpleGraph, g)
             @test gsimple == LG.cycle_graph(T(n))
             @test eltype(g) == eltype(gsimple)
+        end
+
+        @testset "convert(SimpleGraph{$T2}, g)" for T2 in (UInt32, Int64, UInt64)
+
+            gsimple = convert(LG.SimpleGraph{T2}, g)
+            @test gsimple == LG.cycle_graph(T2(n))
+            @test eltype(gsimple) == T2
         end
 
         @testset "pagerank" begin
