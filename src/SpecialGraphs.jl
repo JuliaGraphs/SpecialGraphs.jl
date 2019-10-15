@@ -8,7 +8,11 @@ import Base.eltype, Base.convert, Base.size, Base.getindex, Base.IndexStyle
 using LightGraphs: AbstractGraph, SimpleGraph,
                    nv, ne, outneighbors, edgetype,
                    inneighbors, vertices, edges, Edge,
-                   has_vertex, has_edge, SimpleGraph, cycle_graph
+                   has_vertex, has_edge, SimpleGraph, cycle_graph,
+                   Δ, δ, degree
+
+using FillArrays: Fill
+using LinearAlgebra: SymTridiagonal
 
 export CycleGraph, WheelGraph, PathGraph, CompleteGraph
 
