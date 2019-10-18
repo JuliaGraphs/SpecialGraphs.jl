@@ -89,7 +89,7 @@ function Base.size(edgevec::SimpleEdgeVector{V, G}) where {V, G <: CompleteBipar
     return (ne(g), )
 end
 
-@inline function Base.getindex(edgevec::SimpleEdgeVector{V, G}, i::Int) where {V, G <: CompleteBipartiteGraph}
+@inline function Base.getindex(edgevec::SimpleEdgeVector{V, G}, i::Integer) where {V, G <: CompleteBipartiteGraph}
 
     @boundscheck i ∈ Base.OneTo(length(edgevec)) || throw(BoundsError(edgevec, i))
 
@@ -132,7 +132,7 @@ function Base.size(nbs::OutNeighborVector{V, G}) where {V, G <: CompleteBipartit
     return (Int(ifelse(v <= m, n, m)), )
 end
 
-@inline function Base.getindex(nbs::OutNeighborVector{V, G}, i::Int) where {V, G <: CompleteBipartiteGraph}
+@inline function Base.getindex(nbs::OutNeighborVector{V, G}, i::Integer) where {V, G <: CompleteBipartiteGraph}
 
     @boundscheck i ∈ Base.OneTo(length(nbs)) || throw(BoundsError(nbs, i))
 
