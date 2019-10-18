@@ -17,7 +17,7 @@ struct CompleteBipartiteGraph{T<:Integer} <: LG.AbstractGraph{T}
     n::T
 
     function CompleteBipartiteGraph{T}(m, n) where {T}
-       
+
         m = convert(T, m)
         n = convert(T, n)
         m >= zero(T) || throw(ArgumentError("m must be >= 0"))
