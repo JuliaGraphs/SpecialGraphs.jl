@@ -9,7 +9,11 @@ using LightGraphs: AbstractGraph, SimpleGraph,
                    nv, ne, outneighbors, edgetype,
                    inneighbors, vertices, edges, Edge,
                    has_vertex, has_edge, SimpleGraph, cycle_graph,
-                   complete_bipartite_graph
+                   complete_bipartite_graph,
+                   Δ, δ, degree
+
+using FillArrays: Fill
+using LinearAlgebra: SymTridiagonal
 
 export CompleteBipartiteGraph, CycleGraph, WheelGraph, PathGraph, CompleteGraph
 
