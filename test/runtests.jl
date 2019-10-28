@@ -566,3 +566,151 @@ end
     end
     end
 end
+
+
+@testset "CompleteBipartiteGraph" begin
+    @testset "CompleteBipartiteGraph{T}(m, n): (T = $T, m = $m, n = $n)" for
+        T in [UInt8, Int32, Int64],
+        (m, n) in [(0, 0), (1, 0), (0, 2), (3, 1), (3, 4), (7, 5)] ∪ (T == UInt8 ? [(255, 0), (127, 128), (1, 244)] : ()) # extremal cases for UInt8
+
+        @testset "Constructor CompleteBipartiteGraph(m::T, n::T)" begin
+            g = CompleteBipartiteGraph(T(m), T(n))
+
+            @test typeof(g) == CompleteBipartiteGraph{T}
+            @test LG.nv(g) == (m + n)
+        end
+
+        @testset "Constructor CompleteBipartiteGraph{T}(m, n)" begin
+            g = CompleteBipartiteGraph{T}(m, n)
+
+            @test typeof(g) == CompleteBipartiteGraph{T}
+            @test LG.nv(g) == (m + n)
+        end
+
+        g = CompleteBipartiteGraph{T}(m, n)
+
+        @testset "vertices(g)" begin
+            @test eltype(LG.vertices(g)) == T
+            @test collect(LG.vertices(g)) == 1:(m + n)
+        end
+
+        @testset "ne(g)" begin
+            @test typeof(LG.ne(g)) == Int
+            @test LG.ne(g) == m * n
+        end
+
+        @testset "eltype" begin
+            @test eltype(g) == T
+            @test eltype(typeof(g)) == T
+        end
+
+        @testset "edgetype" begin
+            @test LG.edgetype(g) == LG.Edge{T}
+            @test LG.edgetype(typeof(g)) == LG.Edge{T}
+        end
+
+        @testset "is_directed" begin
+            @test LG.is_directed(typeof(g)) == false
+        end
+
+        @testset "has_vertex(g, $v)" for
+            v in [-1, 0, 1, 2, 255]
+
+            has_vertex_expected = v ∈ 1:(m + n)
+            @test LG.has_vertex(g, v) == has_vertex_expected
+        end
+
+        @testset "has_edge(g, $src, $dst)" for
+            (src, dst) in [(1, 2), (2, 1), (1, 3), (0, 1), (1, n), (n, 1), (1, m + n), (m + n, n), (m + n - 1, m + n) ]
+
+            (src ∉ 0:(m+n) || dst ∉ 0:(m+n)) && continue # otherwise we could get problems with truncating
+
+            has_edge_expected = (src ∈ (1:m) && dst in (m+1 : m+n)) || (dst ∈ (1:m) && src in (m+1 : m+n))
+            @test LG.has_edge(g, src, dst) == has_edge_expected
+        end
+
+        @testset "edges(g)" begin
+            edges = LG.edges(g)
+
+            @testset "eltype" begin
+                @test eltype(edges) == LG.edgetype(g)
+                @test eltype(typeof(edges)) == LG.edgetype(g)
+            end
+
+            @testset "correct IndexStyle" begin
+                @test IndexStyle(edges) == IndexLinear()
+                @test IndexStyle(typeof(edges)) == IndexLinear()
+            end
+
+            @testset "length" begin
+                @test length(edges) == LG.ne(g)
+            end
+
+            @testset "lexicographicaly sorted and unique" begin
+                # No order defined on Edge so we convert to Tuple first
+                tuples = map(Tuple, edges)
+                @test issorted(tuples)
+                @test allunique(tuples)
+            end
+
+            @testset "are edges of g" begin
+                @test all(e -> LG.has_edge(g, e), edges)
+            end
+        end
+
+        @testset "outneigbors(g, $v)" for v in (unique([1, 2, m - 1, m, m + 1, m + 2, n + m - 1, n + m]) ∩ LG.vertices(g))
+            outneighbors = LG.outneighbors(g, v)
+
+            @testset "same as inneighbors" begin
+                @test LG.inneighbors(g, v) == outneighbors
+            end
+
+            @testset "eltype" begin
+                @test eltype(outneighbors) == T
+                @test eltype(typeof(outneighbors)) == T
+            end
+
+            @testset "correct IndexStyle" begin
+                @test IndexStyle(outneighbors) == IndexLinear()
+                @test IndexStyle(typeof(outneighbors)) == IndexLinear()
+            end
+
+            @testset "length" begin
+                length_expected = (v ∈ 1:m) ? n : m
+                @test length(outneighbors) == length_expected
+            end
+
+            @testset "issorted and unique" begin
+                @test issorted(outneighbors)
+                @test allunique(outneighbors)
+            end
+
+            @testset "correct values" begin
+                outneighbors_expected = (v ∈ 1:m) ? (m+1:m+n) : (1:m)
+                @test outneighbors == outneighbors_expected
+            end
+        end
+
+        @testset "convert(SimpleGraph, g)" begin
+
+            gsimple = convert(LG.SimpleGraph, g)
+            @test gsimple == LG.complete_bipartite_graph(T(m), T(n))
+            @test gsimple == LG.complete_bipartite_graph(T(m), T(n))
+            @test eltype(g) == eltype(gsimple)
+            @test eltype(g) == eltype(gsimple)
+        end
+
+        @testset "convert(SimpleGraph{$T2}, g)" for T2 in (UInt32, Int64, UInt64)
+
+            gsimple = convert(LG.SimpleGraph{T2}, g)
+            @test gsimple == LG.complete_bipartite_graph(T2(m), T2(n))
+            @test eltype(gsimple) == T2
+        end
+
+        @testset "pagerank" begin
+            if m > 0 && n > 0 # pagerank does not work for empty graphs
+                @test LG.pagerank(g) ≈ LG.pagerank(LG.complete_bipartite_graph(T(m), T(n)))
+            end
+        end
+    end
+end

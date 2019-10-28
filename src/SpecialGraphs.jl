@@ -9,14 +9,16 @@ using LightGraphs: AbstractGraph, SimpleGraph,
                    nv, ne, outneighbors, edgetype,
                    inneighbors, vertices, edges, Edge,
                    has_vertex, has_edge, SimpleGraph, cycle_graph,
+                   complete_bipartite_graph,
                    Δ, δ, degree
 
 using FillArrays: Fill
 using LinearAlgebra: SymTridiagonal
 
-export CycleGraph, WheelGraph, PathGraph, CompleteGraph
+export CompleteBipartiteGraph, CycleGraph, WheelGraph, PathGraph, CompleteGraph
 
 include("utils.jl")
+include("CompleteBipartiteGraph.jl")
 include("CycleGraph.jl")
 include("WheelGraph.jl")
 include("PathGraph.jl")
